@@ -1,243 +1,224 @@
-/*     */ package turo;
-/*     */ 
-/*     */ import java.awt.BorderLayout;
-/*     */ import java.awt.Container;
-/*     */ import java.awt.Dimension;
-/*     */ import java.awt.event.ActionEvent;
-/*     */ import java.awt.event.ActionListener;
-/*     */ import java.text.ParseException;
-/*     */ import java.util.logging.Level;
-/*     */ import java.util.logging.Logger;
-/*     */ import javax.swing.BoxLayout;
-/*     */ import javax.swing.JButton;
-/*     */ import javax.swing.JFrame;
-/*     */ import javax.swing.JLabel;
-/*     */ import javax.swing.JMenu;
-/*     */ import javax.swing.JMenuBar;
-/*     */ import javax.swing.JMenuItem;
-/*     */ import javax.swing.JPanel;
-/*     */ import javax.swing.JScrollPane;
-/*     */ import javax.swing.JTable;
-/*     */ import javax.swing.JTextField;
-/*     */ import javax.swing.event.MenuEvent;
-/*     */ import javax.swing.event.MenuListener;
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ public class MainFrame
-/*     */   extends JFrame
-/*     */ {
-/*     */   private JMenuBar menuBar;
-/*     */   private JMenu fileMenu;
-/*     */   private JMenu optionsMenu;
-/*     */   private BoxLayout boxLayout;
-/*     */   private JPanel top;
-/*     */   private JPanel bottom;
-/*     */   private JPanel general;
-/*     */   private JButton calculate;
-/*     */   private JTable table;
-/*     */   private JTextField client;
-/*     */   private JTextField booking;
-/*     */   private JTextField beginDate;
-/*     */   private JTextField endDate;
-/*     */   private JTextField roomType;
-/*     */   private JLabel roomTypeL;
-/*     */   private JLabel clientL;
-/*     */   private JLabel bookingL;
-/*     */   private JLabel beginDateL;
-/*     */   private JLabel endDateL;
-/*     */   private JPanel roomTypeP;
-/*     */   private JPanel clientP;
-/*     */   private JPanel bookingP;
-/*     */   private JPanel beginDateP;
-/*     */   private JPanel endDateP;
-/*     */   private JMenuItem option;
-/*     */   private Configuration configuration;
-/*     */   
-/*     */   public MainFrame()
-/*     */   {
-/*  78 */     this.configuration = new Configuration();
-/*  79 */     this.configuration.updateConfiguration();
-/*     */     
-/*  81 */     this.top = new JPanel();
-/*  82 */     this.bottom = new JPanel();
-/*  83 */     this.general = new JPanel();
-/*     */     
-/*  85 */     this.menuBar = new JMenuBar();
-/*  86 */     this.fileMenu = new JMenu("Archivo");
-/*  87 */     this.optionsMenu = new JMenu("Configuración");
-/*  88 */     this.optionsMenu.addMenuListener(new MenuListener()
-/*     */     {
-/*     */       public void menuSelected(MenuEvent e) {
-/*  91 */         new ConfigurationDialog(MainFrame.this);
-/*     */       }
-/*     */       
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */       public void menuDeselected(MenuEvent e) {}
-/*     */       
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */       public void menuCanceled(MenuEvent e) {}
-/* 103 */     });
-/* 104 */     this.menuBar.add(this.fileMenu);
-/* 105 */     this.menuBar.add(this.optionsMenu);
-/*     */     
-/* 107 */     setJMenuBar(this.menuBar);
-/*     */     
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/* 113 */     this.calculate = new JButton("Calcular");
-/*     */     
-/*     */ 
-/* 116 */     String[] columnNames = { "Num. Reserva", "Cliente", "Tipo habitacion", "Fecha entrada", "Fecha salida", "Tipo descuento", "Porcentaje descuento", "Base imponible", "IGIC", "Total" };
-/*     */     
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/* 128 */     final Object[][] data = { { "85611444", "WINIGER MARKUS", "Premium", "13/07/2016", "24/07/2016", "Ninguno", "0", "771,03", "53,97", "825" } };
-/*     */     
-/*     */ 
-/*     */ 
-/* 132 */     this.table = new JTable(data, columnNames);
-/* 133 */     this.table.setFillsViewportHeight(true);
-/* 134 */     this.table.setAutoResizeMode(4);
-/*     */     
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/* 140 */     this.clientP = new JPanel();
-/*     */     
-/* 142 */     this.bookingP = new JPanel();
-/* 143 */     this.beginDateP = new JPanel();
-/* 144 */     this.endDateP = new JPanel();
-/* 145 */     this.roomTypeP = new JPanel();
-/*     */     
-/*     */ 
-/* 148 */     this.beginDate = new JTextField();
-/* 149 */     this.endDate = new JTextField();
-/* 150 */     this.client = new JTextField();
-/* 151 */     this.booking = new JTextField();
-/* 152 */     this.roomType = new JTextField();
-/*     */     
-/* 154 */     this.clientL = new JLabel("Nombre cliente:");
-/*     */     
-/*     */ 
-/* 157 */     this.bookingL = new JLabel("Num. Reserva:");
-/*     */     
-/* 159 */     this.beginDateL = new JLabel("Fecha entrada (dd/mm/yyyy):");
-/*     */     
-/* 161 */     this.endDateL = new JLabel("Fecha salida (dd/mm/yyyy):");
-/*     */     
-/* 163 */     this.roomTypeL = new JLabel("Tipo habitación:");
-/*     */     
-/*     */ 
-/* 166 */     
-/*     */ 
-/* 169 */     this.clientP.setLayout(new BoxLayout(this.clientP, BoxLayout.Y_AXIS));
-/* 170 */     this.bookingP.setLayout(new BoxLayout(this.bookingP, BoxLayout.Y_AXIS));
-/* 171 */     this.beginDateP.setLayout(new BoxLayout(this.beginDateP, BoxLayout.Y_AXIS));
-/* 172 */     this.endDateP.setLayout(new BoxLayout(this.endDateP, BoxLayout.Y_AXIS));
-/* 173 */     this.roomTypeP.setLayout(new BoxLayout(this.roomTypeP, BoxLayout.Y_AXIS));
-/*     */     
-/* 175 */     this.clientP.add(this.clientL);
-/* 176 */     this.clientP.add(this.client);
-/* 177 */     this.roomTypeP.add(this.roomTypeL);
-/* 178 */     this.roomTypeP.add(this.roomType);
-/* 179 */     this.bookingP.add(this.bookingL);
-/* 180 */     this.bookingP.add(this.booking);
-/* 181 */     this.beginDateP.add(this.beginDateL);
-/* 182 */     this.beginDateP.add(this.beginDate);
-/* 183 */     this.endDateP.add(this.endDateL);
-/* 184 */     this.endDateP.add(this.endDate);
-/* 185 */     this.bottom.add(this.clientP);
-/* 186 */     this.bottom.add(this.roomTypeP);
-/* 187 */     this.bottom.add(this.bookingP);
-/* 188 */     this.bottom.add(this.beginDateP);
-/* 189 */     this.bottom.add(this.endDateP);
-/* 190 */     this.bottom.add(this.calculate);
-/*     */     
-/*     */ 
-/* 193 */     this.calculate.addActionListener(new ActionListener()
-/*     */     {
-/*     */       public void actionPerformed(ActionEvent e) {
-/*     */         try {
-/* 197 */           PairDaysPrice[] calculate1 = new Calculator(MainFrame.this.client.getText(), MainFrame.this.roomType.getText(), MainFrame.this.beginDate.getText(), MainFrame.this.endDate.getText(), MainFrame.this.configuration).calculate();
-/* 198 */           Object[][] newData = new Object[data.length + 1][data[0].length];
-/* 199 */           for (int i = 0; i < data.length; i++) {
-/* 200 */             System.arraycopy(data, 0, newData, 0, data[i].length);
-/*     */           }
-/*     */           
-/* 203 */           double finalPrice = 0;
-/* 204 */           for (int i = 0; i < calculate1.length; i++) {
-/* 205 */             finalPrice += calculate1[i].getDays() * calculate1[i].getPrice();
-/*     */           }
-/*     */           
-/* 208 */           newData[data.length][0] = MainFrame.this.client;
-/* 209 */           newData[data.length][1] = MainFrame.this.roomType;
-/* 210 */           newData[data.length][2] = MainFrame.this.booking;
-/* 211 */           newData[data.length][3] = MainFrame.this.beginDate;
-/* 212 */           newData[data.length][4] = MainFrame.this.endDate;
-/* 213 */           newData[data.length][9] = MainFrame.this.endDate;
-/*     */         } catch (ParseException ex) {
-/* 215 */           Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-/*     */         }
-/*     */         
-/*     */       }
-/*     */       
-/* 220 */     });
-/* 221 */     this.general.setLayout(new BorderLayout());
-/*     */     
-/* 223 */     this.general.add(new JScrollPane(this.table), "Center");
-/* 224 */     this.general.add(this.bottom, "South");
-/*     */     
-/* 226 */     getContentPane().add(this.general);
-/*     */     
-/* 228 */     setTitle("Turo");
-/* 229 */     setDefaultCloseOperation(3);
-/* 230 */     pack();
-/* 231 */     setLocationRelativeTo(null);
-/* 233 */     setVisible(true);
-/*     */   }
-/*     */   
-/*     */   public Configuration getConfiguration() {
-/* 237 */     return this.configuration;
-/*     */   }
-/*     */ }
+package turo;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.util.logging.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
-/* Location:              C:\Users\Jose\Documents\NetBeansProjects\Turo\build\classes\!\turo\MainFrame.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       0.7.1
- */
+public class MainFrame
+        extends JFrame {
+
+    private JMenuBar menuBar;
+    private JMenu fileMenu;
+    private JMenu optionsMenu;
+    private BoxLayout boxLayout;
+    private JPanel top;
+    private JPanel bottom;
+    private JPanel general;
+    private JButton calculate;
+    private JTable table;
+    private JTextField client;
+    private JTextField booking;
+    private JTextField beginDate;
+    private JTextField endDate;
+    private JTextField roomType;
+    private JLabel roomTypeL;
+    private JLabel clientL;
+    private JLabel bookingL;
+    private JLabel beginDateL;
+    private JLabel endDateL;
+    private JPanel roomTypeP;
+    private JPanel clientP;
+    private JPanel bookingP;
+    private JPanel beginDateP;
+    private JPanel endDateP;
+    private JMenuItem option;
+    private Object[][] data;
+    private SeasonConfiguration configuration;
+
+    public MainFrame() {
+
+        this.configuration = new SeasonConfiguration();
+        this.configuration.updateConfiguration();
+
+        this.top = new JPanel();
+        this.bottom = new JPanel();
+        this.general = new JPanel();
+
+        this.menuBar = new JMenuBar();
+        this.fileMenu = new JMenu("Archivo");
+        this.optionsMenu = new JMenu("Configuración");
+
+        this.optionsMenu.addMenuListener(new MenuListener() {
+            public void menuSelected(MenuEvent e) {
+                new SeasonDialog(MainFrame.this);
+            }
+
+            public void menuDeselected(MenuEvent e) {
+            }
+
+            public void menuCanceled(MenuEvent e) {
+            }
+        });
+        this.menuBar.add(this.fileMenu);
+        this.menuBar.add(this.optionsMenu);
+
+        setJMenuBar(this.menuBar);
+
+        this.calculate = new JButton("Calcular");
+
+        String[] columnNames = {"Num. Reserva", "Cliente", "Tipo habitacion", "Fecha entrada", "Fecha salida", "Tipo descuento", "Porcentaje descuento", "Base imponible", "IGIC", "Total"};
+        this.data = new Object[0][columnNames.length];
+
+        this.table = new JTable(data, columnNames);
+        this.table.setFillsViewportHeight(true);
+        this.table.setAutoResizeMode(4);
+
+        getRootPane().setDefaultButton(calculate);
+
+        final AbstractTableModel abstractTableModel = new AbstractTableModel() {
+            public String getColumnName(int column) {
+                return columnNames[column];
+            }
+
+            public int findColumn(String columnName) {
+                for (int i = 0; i < columnNames.length; i++) {
+                    if (columnNames[i].equals(columnName)) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+
+            public boolean isCellEditable(int row, int col) {
+                return false;
+            }
+
+            public int getRowCount() {
+                if (data != null) {
+                    return data.length;
+                } else {
+                    return 0;
+                }
+            }
+
+            public int getColumnCount() {
+                if (data != null && data.length >= 0) {
+                    return columnNames.length;
+                } else {
+                    return 0;
+                }
+            }
+
+            public Object getValueAt(int rowIndex, int columnIndex) {
+                return data[rowIndex][columnIndex];
+            }
+
+        };
+        this.table.setModel(abstractTableModel);
+
+        this.clientP = new JPanel();
+
+        this.bookingP = new JPanel();
+        this.beginDateP = new JPanel();
+        this.endDateP = new JPanel();
+        this.roomTypeP = new JPanel();
+
+        this.beginDate = new JTextField();
+        this.endDate = new JTextField();
+        this.client = new JTextField();
+        this.booking = new JTextField();
+        this.roomType = new JTextField();
+
+        this.clientL = new JLabel("Nombre cliente:");
+
+        this.bookingL = new JLabel("Num. Reserva:");
+
+        this.beginDateL = new JLabel("Fecha entrada (dd/mm/yyyy):");
+
+        this.endDateL = new JLabel("Fecha salida (dd/mm/yyyy):");
+
+        this.roomTypeL = new JLabel("Tipo habitación:");
+
+        this.clientP.setLayout(new BoxLayout(this.clientP, BoxLayout.Y_AXIS));
+        this.bookingP.setLayout(new BoxLayout(this.bookingP, BoxLayout.Y_AXIS));
+        this.beginDateP.setLayout(new BoxLayout(this.beginDateP, BoxLayout.Y_AXIS));
+        this.endDateP.setLayout(new BoxLayout(this.endDateP, BoxLayout.Y_AXIS));
+        this.roomTypeP.setLayout(new BoxLayout(this.roomTypeP, BoxLayout.Y_AXIS));
+
+        this.clientP.add(this.clientL);
+        this.clientP.add(this.client);
+        this.roomTypeP.add(this.roomTypeL);
+        this.roomTypeP.add(this.roomType);
+        this.bookingP.add(this.bookingL);
+        this.bookingP.add(this.booking);
+        this.beginDateP.add(this.beginDateL);
+        this.beginDateP.add(this.beginDate);
+        this.endDateP.add(this.endDateL);
+        this.endDateP.add(this.endDate);
+        this.bottom.add(this.clientP);
+        this.bottom.add(this.roomTypeP);
+        this.bottom.add(this.bookingP);
+        this.bottom.add(this.beginDateP);
+        this.bottom.add(this.endDateP);
+        this.bottom.add(this.calculate);
+
+        this.calculate.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    PairDaysPrice[] calculate1 = new Calculator(MainFrame.this.client.getText(), MainFrame.this.roomType.getText(), MainFrame.this.beginDate.getText(), MainFrame.this.endDate.getText(), MainFrame.this.configuration).calculate();
+                    Object[][] newData = new Object[(data != null) ? data.length + 1 : 1][columnNames.length];
+                    for (int i = 0; i < ((data != null) ? data.length : 0); i++) {
+                        System.arraycopy(data[i], 0, newData[i], 0, columnNames.length);
+                    }
+
+                    double finalPrice = 0;
+                    for (int i = 0; i < calculate1.length; i++) {
+                        finalPrice += calculate1[i].getDays() * calculate1[i].getPrice();
+                    }
+
+                    System.out.println("finalprice=" + finalPrice);
+
+                    newData[newData.length - 1][0] = MainFrame.this.client.getText();
+                    newData[newData.length - 1][1] = MainFrame.this.roomType.getText();
+                    newData[newData.length - 1][2] = MainFrame.this.booking.getText();
+                    newData[newData.length - 1][3] = MainFrame.this.beginDate.getText();
+                    newData[newData.length - 1][4] = MainFrame.this.endDate.getText();
+                    newData[newData.length - 1][7] = String.format("%.2f", finalPrice/1.07);
+                    newData[newData.length - 1][8] = String.format("%.2f", finalPrice/1.07*0.07);
+                    newData[newData.length - 1][9] = String.format("%.2f", finalPrice);
+                    data = newData;
+
+                    abstractTableModel.fireTableStructureChanged();
+
+                } catch (ParseException ex) {
+                    Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+
+        });
+        this.general.setLayout(new BorderLayout());
+
+        this.general.add(new JScrollPane(this.table), "Center");
+        this.general.add(this.bottom, "South");
+
+        getContentPane().add(this.general);
+
+        setTitle("Turo");
+        setDefaultCloseOperation(3);
+        pack();
+        setSize(new Dimension(1500,400));
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    public SeasonConfiguration getConfiguration() {
+        return this.configuration;
+    }
+}
