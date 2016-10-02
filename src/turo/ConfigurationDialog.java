@@ -215,7 +215,10 @@
 /* 215 */     this.cancel.addActionListener(new ActionListener()
 /*     */     {
 /*     */ 
-/*     */       public void actionPerformed(ActionEvent e) {}
+/*     */       public void actionPerformed(ActionEvent e) {
+                    setVisible(false);
+                    dispose();
+                }
 /*     */ 
 /*     */ 
 /* 221 */     });

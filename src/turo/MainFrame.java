@@ -163,14 +163,13 @@
 /* 163 */     this.roomTypeL = new JLabel("Tipo habitación:");
 /*     */     
 /*     */ 
-/* 166 */     this.calculate.setAlignmentX(0.0F);
-/*     */     
+/* 166 */     
 /*     */ 
-/* 169 */     this.clientP.setLayout(new BoxLayout(this.clientP, 1));
-/* 170 */     this.bookingP.setLayout(new BoxLayout(this.bookingP, 1));
-/* 171 */     this.beginDateP.setLayout(new BoxLayout(this.beginDateP, 1));
-/* 172 */     this.endDateP.setLayout(new BoxLayout(this.endDateP, 1));
-/* 173 */     this.roomTypeP.setLayout(new BoxLayout(this.roomTypeP, 1));
+/* 169 */     this.clientP.setLayout(new BoxLayout(this.clientP, BoxLayout.Y_AXIS));
+/* 170 */     this.bookingP.setLayout(new BoxLayout(this.bookingP, BoxLayout.Y_AXIS));
+/* 171 */     this.beginDateP.setLayout(new BoxLayout(this.beginDateP, BoxLayout.Y_AXIS));
+/* 172 */     this.endDateP.setLayout(new BoxLayout(this.endDateP, BoxLayout.Y_AXIS));
+/* 173 */     this.roomTypeP.setLayout(new BoxLayout(this.roomTypeP, BoxLayout.Y_AXIS));
 /*     */     
 /* 175 */     this.clientP.add(this.clientL);
 /* 176 */     this.clientP.add(this.client);
@@ -200,7 +199,7 @@
 /* 200 */             System.arraycopy(data, 0, newData, 0, data[i].length);
 /*     */           }
 /*     */           
-/* 203 */           double finalPrice = 0.0D;
+/* 203 */           double finalPrice = 0;
 /* 204 */           for (int i = 0; i < calculate1.length; i++) {
 /* 205 */             finalPrice += calculate1[i].getDays() * calculate1[i].getPrice();
 /*     */           }
@@ -228,8 +227,7 @@
 /* 228 */     setTitle("Turo");
 /* 229 */     setDefaultCloseOperation(3);
 /* 230 */     pack();
-/* 231 */     setSize(new Dimension(800, 500));
-/* 232 */     setLocationRelativeTo(null);
+/* 231 */     setLocationRelativeTo(null);
 /* 233 */     setVisible(true);
 /*     */   }
 /*     */   

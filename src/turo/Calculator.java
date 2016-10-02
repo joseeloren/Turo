@@ -6,6 +6,8 @@
 /*    */ import java.time.ZoneId;
 /*    */ import java.util.Date;
 /*    */ 
+
+// this is a comment
 /*    */ public class Calculator
 /*    */ {
 /*    */   private String client;
@@ -50,6 +52,9 @@
 /*    */     
 /* 51 */     for (LocalDate date = start; date.isBefore(end); date = date.plusDays(1L)) {
 /* 52 */       int season = this.configuration.getSeason(date);
+                System.out.println("season="+season);
+                System.out.println("roomType="+roomType);
+                System.out.println("price="+this.configuration.getPrice(season,getRoomType()));
 /* 53 */       daysPrices[season].setPrice(this.configuration.getPrice(season, getRoomType()));
 /* 54 */       daysPrices[season].setDays(daysPrices[season].getDays() + 1);
 /*    */     }
@@ -58,8 +63,3 @@
 /*    */   }
 /*    */ }
 
-
-/* Location:              C:\Users\Jose\Documents\NetBeansProjects\Turo\build\classes\!\turo\Calculator.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       0.7.1
- */

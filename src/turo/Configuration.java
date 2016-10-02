@@ -99,10 +99,11 @@
 /*     */   
 /*     */   public double getPrice(int season, String roomType) {
 /*  82 */     for (int i = 0; i < this.prices.length; i++) {
+                System.out.println("roomType(getPrice)="+this.prices[i][0]);
 /*  83 */       if (this.prices[i][0].equals(roomType))
 /*  84 */         return Double.parseDouble(this.prices[i][(season + 1)]);
 /*     */     }
-/*  86 */     return 0.0D;
+/*  86 */     return 0;
 /*     */   }
 /*     */   
 /*     */   public String[] getDates() {
