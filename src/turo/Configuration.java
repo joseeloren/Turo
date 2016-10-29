@@ -9,18 +9,23 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-public class SeasonConfiguration {
+public class Configuration {
 
     private int seasons;
     private int rooms;
     private String[][] prices;
     private String[] dates;
+    private String tax;
 
-    public SeasonConfiguration() {
+    public Configuration() {
         this.seasons = 1;
         this.rooms = 1;
         this.prices = new String[this.rooms][this.seasons];
         this.dates = new String[this.seasons];
+    }
+    
+    String getTax() {
+        return tax;
     }
 
     public void updateConfiguration() {
@@ -73,6 +78,37 @@ public class SeasonConfiguration {
             } catch (Exception localException1) {
             }
         }
+        
+        File file2 = new File("tax.csv");
+
+        if (file2.exists()) {
+             try {
+                BufferedReader br = new BufferedReader(new java.io.FileReader(file2));
+                Throwable localThrowable3 = null;
+                try {
+                    String line;
+                    if ((line = br.readLine()) != null) {
+                        tax = line;
+                    }
+                } catch (Throwable localThrowable1) {
+                    localThrowable3 = localThrowable1;
+                    throw localThrowable1;
+                } finally {
+                    if (br != null) {
+                        if (localThrowable3 != null) {
+                            try {
+                                br.close();
+                            } catch (Throwable localThrowable2) {
+                                localThrowable3.addSuppressed(localThrowable2);
+                            }
+                        } else {
+                            br.close();
+                        }
+                    }
+                }
+            } catch (Exception localException1) {
+            }
+        }
     }
 
     public Object[][] getData() {
@@ -93,7 +129,21 @@ public class SeasonConfiguration {
     }
 
     public String[][] getPrices() {
+        for (int i = 0; i < prices.length; i++) {
+            for (int j = 0; j < prices[i].length; j++) {
+                System.out.println(prices[i][j]);
+            }
+            
+        }
         return this.prices;
+    }
+    
+    public String[] getRoomsNames() {
+        String[] result = new String[this.rooms];
+        for (int i = 0; i < this.rooms; i++) {
+            result[i] = this.prices[i][0];
+        }
+        return result;
     }
 
     public double getPrice(int season, String roomType) {
