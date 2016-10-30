@@ -70,11 +70,11 @@ public class ConfigurationDialog
         this.longEstanceText = new JLabel("DESCUENTOS DE LARGA INSTANCIA");
         this.taxText = new JLabel("IMPUESTO");
         this.tax = new JTextField();
-        this.permanentData = new String[2][permanentColumnNames.length];
+        this.permanentData = frame.getConfiguration().getPermanentData();
 
-        this.longEstanceData = new String[1][longEstanceColumnNames.length];
+        this.longEstanceData = frame.getConfiguration().getLongEstanceData();
 
-        this.seasonsData = frame.getConfiguration().getData();
+        this.seasonsData = frame.getConfiguration().getSeasonsData();
         this.tax.setText(frame.getConfiguration().getTax());
         this.seasonsColumnNames = new String[this.seasonsData[0].length];
         this.seasonsColumnNames[0] = "";
@@ -135,7 +135,11 @@ public class ConfigurationDialog
             }
 
             public boolean isCellEditable(int row, int col) {
-                return (row != col) && (col != 0);
+                if (row == 0 && col == 0) {
+                    return false;
+                }
+                return true;
+
             }
 
             public int getRowCount() {
@@ -150,10 +154,13 @@ public class ConfigurationDialog
                 return ConfigurationDialog.this.seasonsData[rowIndex][columnIndex];
             }
 
+            public void setValueAt(Object value, int row, int col) {
+                seasonsData[row][col] = value;
+                fireTableCellUpdated(row, col);
+            }
+
         };
         this.seasons.setModel(abstractTableModel);
-
-     
 
         final AbstractTableModel abstractTableModel2 = new AbstractTableModel() {
             public String getColumnName(int column) {
@@ -198,8 +205,6 @@ public class ConfigurationDialog
         this.permanent.setModel(abstractTableModel2);
 
         String[] roomsNames = frame.getConfiguration().getRoomsNames();
-                
-        
 
         final AbstractTableModel abstractTableModel3 = new AbstractTableModel() {
             public String getColumnName(int column) {
@@ -230,7 +235,7 @@ public class ConfigurationDialog
             public Object getValueAt(int rowIndex, int columnIndex) {
                 return ConfigurationDialog.this.longEstanceData[rowIndex][columnIndex];
             }
-            
+
             public void setValueAt(Object value, int row, int col) {
                 longEstanceData[row][col] = value;
                 fireTableCellUpdated(row, col);
@@ -238,7 +243,7 @@ public class ConfigurationDialog
 
         };
         this.longEstance.setModel(abstractTableModel3);
-        
+
         TableColumn c0 = permanent.getColumnModel().getColumn(0);
 
         JComboBox comboBox = new JComboBox();
@@ -249,7 +254,7 @@ public class ConfigurationDialog
         comboBox.addItem("Todos");
 
         c0.setCellEditor(new DefaultCellEditor(comboBox));
-        
+
         TableColumn c01 = permanent.getColumnModel().getColumn(2);
 
         JComboBox comboBox2 = new JComboBox();
@@ -258,7 +263,7 @@ public class ConfigurationDialog
         comboBox2.addItem("A la salida");
 
         c01.setCellEditor(new DefaultCellEditor(comboBox2));
-        
+
         TableColumn c02 = permanent.getColumnModel().getColumn(4);
 
         JComboBox comboBox3 = new JComboBox();
@@ -267,7 +272,7 @@ public class ConfigurationDialog
         comboBox3.addItem("Primeros");
 
         c02.setCellEditor(new DefaultCellEditor(comboBox3));
-        
+
         TableColumn c1 = longEstance.getColumnModel().getColumn(0);
 
         JComboBox comboBox4 = new JComboBox();
@@ -275,14 +280,14 @@ public class ConfigurationDialog
         for (String roomsName : roomsNames) {
             comboBox4.addItem(roomsName);
         }
+        comboBox4.addItem("Todos");
 
         c1.setCellEditor(new DefaultCellEditor(comboBox4));
-        
+
         TableColumn c2 = longEstance.getColumnModel().getColumn(3);
 
         JComboBox comboBox5 = new JComboBox();
 
-        
         comboBox5.addItem("A la llegada");
         comboBox5.addItem("A la salida");
 
@@ -332,7 +337,7 @@ public class ConfigurationDialog
                 }
                 ConfigurationDialog.this.permanentData = newData;
 
-                ((AbstractTableModel) permanent.getModel()).fireTableStructureChanged();
+                ((AbstractTableModel) permanent.getModel()).fireTableDataChanged();
             }
 
         });
@@ -344,7 +349,7 @@ public class ConfigurationDialog
                 }
                 ConfigurationDialog.this.longEstanceData = newData;
 
-                ((AbstractTableModel) longEstance.getModel()).fireTableStructureChanged();
+                ((AbstractTableModel) longEstance.getModel()).fireTableDataChanged();
             }
 
         });
@@ -360,7 +365,7 @@ public class ConfigurationDialog
                 }
                 ConfigurationDialog.this.seasonsData = newData;
 
-                ((AbstractTableModel) seasons.getModel()).fireTableStructureChanged();
+                ((AbstractTableModel) seasons.getModel()).fireTableDataChanged();
 
             }
 
@@ -374,7 +379,7 @@ public class ConfigurationDialog
                     }
                     ConfigurationDialog.this.seasonsData = newData;
 
-                    ((AbstractTableModel) seasons.getModel()).fireTableStructureChanged();
+                    ((AbstractTableModel) seasons.getModel()).fireTableDataChanged();
 
                 }
 
@@ -382,14 +387,14 @@ public class ConfigurationDialog
         });
         this.removeLongEstance.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (ConfigurationDialog.this.longEstanceData.length > 1) {
+                if (ConfigurationDialog.this.longEstanceData.length > 0) {
                     Object[][] newData = new Object[ConfigurationDialog.this.longEstanceData.length - 1][ConfigurationDialog.this.longEstanceColumnNames.length];
                     for (int i = 0; i < ConfigurationDialog.this.longEstanceData.length - 1; i++) {
                         System.arraycopy(ConfigurationDialog.this.longEstanceData[i], 0, newData[i], 0, ConfigurationDialog.this.longEstanceData[i].length);
                     }
                     ConfigurationDialog.this.longEstanceData = newData;
 
-                    ((AbstractTableModel) longEstance.getModel()).fireTableStructureChanged();
+                    ((AbstractTableModel) longEstance.getModel()).fireTableDataChanged();
 
                 }
 
@@ -397,20 +402,67 @@ public class ConfigurationDialog
         });
         this.removePermanent.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (ConfigurationDialog.this.permanentData.length > 1) {
+                if (ConfigurationDialog.this.permanentData.length > 0) {
                     Object[][] newData = new Object[ConfigurationDialog.this.permanentData.length - 1][ConfigurationDialog.this.permanentColumnNames.length];
                     for (int i = 0; i < ConfigurationDialog.this.permanentData.length - 1; i++) {
                         System.arraycopy(ConfigurationDialog.this.permanentData[i], 0, newData[i], 0, ConfigurationDialog.this.permanentData[i].length);
                     }
                     ConfigurationDialog.this.permanentData = newData;
 
-                    ((AbstractTableModel) permanent.getModel()).fireTableStructureChanged();
+                    ((AbstractTableModel) permanent.getModel()).fireTableDataChanged();
                 }
 
             }
         });
         this.save.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                File fileR = new File("longEstance.csv");
+
+                try {
+                    fileR.createNewFile();
+
+                    FileWriter writer = new FileWriter(fileR);
+
+                    for (int i = 0; i < ConfigurationDialog.this.longEstanceData.length; i++) {
+                        String line = "";
+                        for (int j = 0; j < ConfigurationDialog.this.longEstanceData[i].length; j++) {
+
+                            line = line + ConfigurationDialog.this.longEstanceData[i][j] + ";";
+                        }
+
+                        if (line.indexOf("null") < 0) {
+                            writer.write(line + "\n");
+                        }
+
+                        writer.flush();
+                    }
+                    writer.close();
+                } catch (Exception localException) {
+                }
+
+                File file0 = new File("permanent.csv");
+
+                try {
+                    file0.createNewFile();
+
+                    FileWriter writer = new FileWriter(file0);
+
+                    for (int i = 0; i < ConfigurationDialog.this.permanentData.length; i++) {
+                        String line = "";
+                        for (int j = 0; j < ConfigurationDialog.this.permanentData[i].length; j++) {
+                            line = line + ConfigurationDialog.this.permanentData[i][j] + ";";
+                        }
+
+                        if (line.indexOf("null") < 0) {
+                            writer.write(line + "\n");
+                        }
+
+                        writer.flush();
+                    }
+                    writer.close();
+                } catch (Exception localException) {
+                }
+
                 File file = new File("seasons.csv");
 
                 try {
@@ -469,12 +521,10 @@ public class ConfigurationDialog
         permanentButtons.setBorder(new EmptyBorder(0, 0, 15, 0));
         longEstanceButtons.setBorder(new EmptyBorder(0, 0, 15, 0));
         taxButtons.setBorder(new EmptyBorder(0, 0, 15, 0));
-        
-        
+
         permanent.setPreferredScrollableViewportSize(new Dimension((int) permanent.getSize().getWidth(), 80));
         longEstance.setPreferredScrollableViewportSize(new Dimension((int) permanent.getSize().getWidth(), 80));
         seasons.setPreferredScrollableViewportSize(new Dimension((int) permanent.getSize().getWidth(), 80));
-        
 
         JPanel p1 = new JPanel();
         JPanel p2 = new JPanel();
