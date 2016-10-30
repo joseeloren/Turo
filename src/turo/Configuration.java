@@ -44,7 +44,7 @@ public class Configuration {
         String path = dir.toString();
         
         File file4 = new File(path + "/longEstance.csv");
-        
+        System.out.println(path);
 
         int rows2 = 0;
         if (file4.exists()) {

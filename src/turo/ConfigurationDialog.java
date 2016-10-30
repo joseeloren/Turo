@@ -492,6 +492,7 @@ public class ConfigurationDialog
                 }
 
                 File file2 = new File(path + "/tax.csv");
+                
 
                 try {
                     file2.createNewFile();
@@ -548,6 +549,8 @@ public class ConfigurationDialog
         getContentPane().add(longEstanceButtons);
         getContentPane().add(taxButtons);
         getContentPane().add(endButtons);
+        getRootPane()
+                .setDefaultButton(save);
 
         pack();
         repaint();
