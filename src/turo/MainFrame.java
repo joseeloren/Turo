@@ -3,6 +3,8 @@ package turo;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.ParseException;
 import java.util.logging.*;
 import javax.swing.*;
@@ -15,7 +17,6 @@ public class MainFrame extends JFrame {
     private JPanel general;
 
     private JButton calculate;
-    private JButton config;
 
     private JComboBox roomType;
     private JTextField beginDate;
@@ -45,17 +46,44 @@ public class MainFrame extends JFrame {
         configuration.updateConfiguration();
 
         general = new JPanel();
-        general.setLayout(new GridLayout(10, 2));
+        general.setLayout(new GridLayout(9, 2));
         calculate = new JButton("Calcular");
-        config = new JButton("Configuración");
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("Configuración");
+        menuBar.add(menu);
+        this.setJMenuBar(menuBar);
+        menu.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                new ConfigurationDialog(MainFrame.this);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
         roomType = new JComboBox(configuration.getRoomsNames());
         beginDate = new JTextField(10);
 
         endDate = new JTextField(10);
         discount = new JTextField();
-        discount.setEditable(false);
         discountPercent = new JTextField();
-        discountPercent.setEditable(false);
         alojamiento = new JTextField();
         alojamiento.setEditable(false);
         baseImponible = new JTextField();
@@ -74,15 +102,6 @@ public class MainFrame extends JFrame {
         igicL = new JLabel("IGIC:");
         totalL = new JLabel("Total:");
 
-        config.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new ConfigurationDialog(MainFrame.this);
-            }
-        }
-        );
-
         getRootPane()
                 .setDefaultButton(calculate);
 
@@ -92,67 +111,69 @@ public class MainFrame extends JFrame {
         general.add(beginDate);
         general.add(endDateL);
         general.add(endDate);
-        general.add(alojamientoL);
-        general.add(alojamiento);
         general.add(discountL);
         general.add(discount);
         general.add(discountPercentL);
         general.add(discountPercent);
+        general.add(alojamientoL);
+        general.add(alojamiento);
         general.add(baseImponibleL);
         general.add(baseImponible);
         general.add(igicL);
         general.add(igic);
         general.add(totalL);
         general.add(total);
-        general.add(config);
-        general.add(calculate);
 
-        getContentPane().add(general);
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(general, BorderLayout.CENTER);
+        getContentPane().add(calculate, BorderLayout.SOUTH);
         this.calculate.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 try {
                     PairDaysPricesDiscount daysPricesDiscount = new Calculator((String) MainFrame.this.roomType.getSelectedItem(), MainFrame.this.beginDate.getText(), MainFrame.this.endDate.getText(), MainFrame.this.configuration).calculate();
                     PairDaysPrice[] calculate1 = daysPricesDiscount.getPairDaysPrices();
-                    discount.setText(daysPricesDiscount.getDiscountType());
-                    
+
                     double finalPrice = 0;
                     String aloja = "";
-                    System.out.println("daysPricesDiscount.getDiscountType()="+daysPricesDiscount.getDiscountType());
-                    
-                    if (daysPricesDiscount.getDiscountType().equals("Incentivos permanentes")) {
+                    for (int i = 0; i < calculate1.length; i++) {
+                        if (calculate1[i].getDays() > 0 || calculate1[i].getPrice() > 0) {
+                            aloja += Integer.toString(calculate1[i].getDays()) + "D x " + Double.toString(calculate1[i].getPrice()) + "€ + ";
+                        }
+                    }
+
+                    if ((discount.getText().equals("Incentivos permanentes") || discount.getText().equals("Larga estancia") || discount.getText().equals("")) && daysPricesDiscount.getDiscountType().equals("Incentivos permanentes")) {
                         String[] da = daysPricesDiscount.getDiscount()[1].split("=");
-                        int dai = Math.abs(Integer.parseInt(da[0])-Integer.parseInt(da[1]));
+                        int dai = Math.abs(Integer.parseInt(da[0]) - Integer.parseInt(da[1]));
                         if (daysPricesDiscount.getDiscount()[4].equals("Ultimos")) {
                             while (dai != 0) {
                                 dai--;
-                                for(int i=calculate1.length-1;i>=0;i--) {
+                                for (int i = calculate1.length - 1; i >= 0; i--) {
                                     if (calculate1[i].getDays() > 0) {
-                                        calculate1[i].setDays(calculate1[i].getDays()-1);
+                                        calculate1[i].setDays(calculate1[i].getDays() - 1);
                                         break;
                                     }
                                 }
                             }
-                        }
-                        else if (daysPricesDiscount.getDiscount()[4].equals("Primeros")) {
+                        } else if (daysPricesDiscount.getDiscount()[4].equals("Primeros")) {
                             while (dai != 0) {
                                 dai--;
                                 for (int i = 0; i < calculate1.length; i++) {
                                     if (calculate1[i].getDays() > 0) {
-                                        calculate1[i].setDays(calculate1[i].getDays()-1);
+                                        calculate1[i].setDays(calculate1[i].getDays() - 1);
                                         break;
                                     }
                                 }
                             }
-                            
+
                         }
-                        discountPercent.setText(daysPricesDiscount.getDiscount()[4]+" "+daysPricesDiscount.getDiscount()[1]);
+                        discountPercent.setText(daysPricesDiscount.getDiscount()[4] + " " + daysPricesDiscount.getDiscount()[1]);
                         for (int i = 0; i < calculate1.length; i++) {
                             if (calculate1[i].getDays() > 0 || calculate1[i].getPrice() > 0) {
                                 finalPrice += calculate1[i].getDays() * calculate1[i].getPrice();
                             }
                         }
-                    } else if (daysPricesDiscount.getDiscountType().equals("Larga estancia")) {
+                        discount.setText(daysPricesDiscount.getDiscountType());
+                    } else if ((discount.getText().equals("Incentivos permanentes") || discount.getText().equals("Larga estancia") || discount.getText().equals("")) && daysPricesDiscount.getDiscountType().equals("Larga estancia")) {
                         for (int i = 0; i < calculate1.length; i++) {
                             if (calculate1[i].getDays() > 0 || calculate1[i].getPrice() > 0) {
                                 finalPrice += calculate1[i].getDays() * calculate1[i].getPrice();
@@ -160,21 +181,23 @@ public class MainFrame extends JFrame {
                         }
                         double dis = Double.parseDouble(daysPricesDiscount.getDiscount()[1]);
                         discountPercent.setText(daysPricesDiscount.getDiscount()[1]);
-                        finalPrice = finalPrice - (dis/100)*finalPrice;
+                        finalPrice = finalPrice - (dis / 100) * finalPrice;
+                        discount.setText(daysPricesDiscount.getDiscountType());
                     } else {
                         for (int i = 0; i < calculate1.length; i++) {
                             if (calculate1[i].getDays() > 0 || calculate1[i].getPrice() > 0) {
                                 finalPrice += calculate1[i].getDays() * calculate1[i].getPrice();
                             }
                         }
+
+                        if (!discount.getText().equals("Incentivos permanentes") && !discount.getText().equals("Larga estancia") && !discount.getText().equals("")) {
+
+                            finalPrice = finalPrice - finalPrice * ((double) Integer.parseInt(discountPercent.getText()) / 100);
+
+                        }
+
                     }
 
-                    
-                    for (int i = 0; i < calculate1.length; i++) {
-                        if (calculate1[i].getDays() > 0 || calculate1[i].getPrice() > 0) {
-                            aloja += Integer.toString(calculate1[i].getDays()) + "D x " + Double.toString(calculate1[i].getPrice()) + "€ + ";
-                        }
-                    }
                     if (aloja.length() > 1) {
                         aloja = aloja.substring(0, aloja.length() - 2);
                     }
@@ -195,7 +218,7 @@ public class MainFrame extends JFrame {
         );
 
         setTitle("Turo");
-        setIconImage(new ImageIcon("icon.png").getImage());
+        setIconImage((new ImageIcon(getClass().getClassLoader().getResource("resources/icon.png")).getImage()));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         setSize(400, 300);

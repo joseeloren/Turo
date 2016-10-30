@@ -416,7 +416,11 @@ public class ConfigurationDialog
         });
         this.save.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                File fileR = new File("longEstance.csv");
+                File f = new File(System.getProperty("java.class.path"));
+                File dir = f.getAbsoluteFile().getParentFile();
+                String path = dir.toString();
+
+                File fileR = new File(path + "/longEstance.csv");
 
                 try {
                     fileR.createNewFile();
@@ -440,7 +444,7 @@ public class ConfigurationDialog
                 } catch (Exception localException) {
                 }
 
-                File file0 = new File("permanent.csv");
+                File file0 = new File(path + "/permanent.csv");
 
                 try {
                     file0.createNewFile();
@@ -463,7 +467,7 @@ public class ConfigurationDialog
                 } catch (Exception localException) {
                 }
 
-                File file = new File("seasons.csv");
+                File file = new File(path + "/seasons.csv");
 
                 try {
                     file.createNewFile();
@@ -487,7 +491,7 @@ public class ConfigurationDialog
                 } catch (Exception localException) {
                 }
 
-                File file2 = new File("tax.csv");
+                File file2 = new File(path + "/tax.csv");
 
                 try {
                     file2.createNewFile();

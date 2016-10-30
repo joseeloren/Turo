@@ -95,7 +95,7 @@ public class Calculator {
                         }
                     }
                 } catch (ParseException ex) {
-                    Logger.getLogger(Calculator.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(null, "Imposible realizar la operacion. Revise las fechas.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
 
                 break;
@@ -108,14 +108,14 @@ public class Calculator {
 
         for (int c = 0; c < (n - 1); c++) {
             for (int d = 0; d < n - c - 1; d++) {
-                if (Integer.parseInt(permanentData[d][5]) > Integer.parseInt(permanentData[d + 1][5])) {
+                if (Integer.parseInt(permanentData[d][5]) < Integer.parseInt(permanentData[d + 1][5])) {
                     String[] swap = permanentData[d];
                     permanentData[d] = permanentData[d + 1];
                     permanentData[d + 1] = swap;
                 } else if (Integer.parseInt(permanentData[d][5]) == Integer.parseInt(permanentData[d + 1][5])) {
                     int a1 = Integer.parseInt(permanentData[d][1].split("=")[0]);
                     int a2 = Integer.parseInt(permanentData[d + 1][1].split("=")[0]);
-                    if (a1 > a2) {
+                    if (a1 < a2) {
                         String[] swap = permanentData[d];
                         permanentData[d] = permanentData[d + 1];
                         permanentData[d + 1] = swap;
@@ -123,12 +123,20 @@ public class Calculator {
                 }
             }
         }
+        
+        for (int i = 0; i < permanentData.length; i++) {
+            for (int j = 0; j < permanentData[i].length; j++) {
+                System.out.println(permanentData[i][j]+";");
+            }
+            System.out.println("");
+        }
 
         for (String[] permanent : permanentData) {
             String[] asd = permanent[1].split("=");
             int compa = Integer.parseInt(asd[0]);
+            System.out.println(compa);
+            System.out.println(diasTotales);
             if ((permanent[0].equals(getRoomType()) || permanent[0].equals("Todos")) && (diasTotales <= Integer.parseInt(permanent[5])) && (compa <= diasTotales)) {
-                System.out.println("entro");
                 String[] dates = permanent[3].split("-");
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
                 LocalDate start2 = null;
@@ -139,7 +147,6 @@ public class Calculator {
                     start2 = startDate2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     end2 = endDate2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     if (permanent[2].equals("A la llegada")) {
-                        System.out.println("otro");
                         for (LocalDate date = start2; date.isBefore(end2); date = date.plusDays(1L)) {
                             if (date.isEqual(start2)) {
                                 return new PairDaysPricesDiscount(daysPrices, "Incentivos permanentes", permanent);
@@ -153,7 +160,7 @@ public class Calculator {
                         }
                     }
                 } catch (ParseException ex) {
-                    Logger.getLogger(Calculator.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(null, "Imposible realizar la operacion. Revise las fechas.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
 
                 break;

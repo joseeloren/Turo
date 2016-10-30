@@ -1,5 +1,6 @@
 package turo;
 
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.LineNumberReader;
@@ -11,6 +12,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 public class Configuration {
 
@@ -36,7 +38,14 @@ public class Configuration {
     }
 
     public void updateConfiguration() {
-        File file4 = new File("longEstance.csv");
+
+        File f = new File(System.getProperty("java.class.path"));
+        File dir = f.getAbsoluteFile().getParentFile();
+        String path = dir.toString();
+        
+        File file4 = new File(path + "/longEstance.csv");
+        
+
         int rows2 = 0;
         if (file4.exists()) {
             try {
@@ -84,7 +93,7 @@ public class Configuration {
             }
         }
 
-        File file0 = new File("permanent.csv");
+        File file0 = new File(path + "/permanent.csv");
         int rows = 0;
         if (file0.exists()) {
             try {
@@ -132,7 +141,7 @@ public class Configuration {
             }
         }
 
-        File file = new File("seasons.csv");
+        File file = new File(path + "/seasons.csv");
 
         if (file.exists()) {
             try {
@@ -182,7 +191,7 @@ public class Configuration {
             }
         }
 
-        File file2 = new File("tax.csv");
+        File file2 = new File(path + "/tax.csv");
 
         if (file2.exists()) {
             try {
@@ -242,12 +251,7 @@ public class Configuration {
     }
 
     public String[][] getPrices() {
-        for (int i = 0; i < prices.length; i++) {
-            for (int j = 0; j < prices[i].length; j++) {
-                System.out.println(prices[i][j]);
-            }
 
-        }
         return this.prices;
     }
 
@@ -261,13 +265,10 @@ public class Configuration {
 
     public double getPrice(int season, String roomType) {
         for (int i = 0; i < this.prices.length; i++) {
-            System.out.println("roomType(getPrice)=" + this.prices[i][0]);
 
             if (this.prices[i][0].equals(roomType)) {
                 if (this.prices[i].length <= season) {
-                    System.out.println("this.prices[i].length <= season");
-                    System.out.println("this.prices[i].length=" + this.prices[i].length);
-                    System.out.println("season=" + season);
+
                     return 0;
                 }
                 return Double.parseDouble(this.prices[i][season]);
@@ -280,18 +281,23 @@ public class Configuration {
         return this.seasonsDates;
     }
 
-    public int getSeason(LocalDate date)
-            throws java.text.ParseException {
+    public int getSeason(LocalDate date) {
         for (int i = 1; i < this.seasonsDates.length; i++) {
             String[] dates2 = this.seasonsDates[i].split("-");
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
-            Date startDate = formatter.parse(dates2[0]);
-            Date endDate = formatter.parse(dates2[1]);
-            LocalDate start = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            LocalDate end = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            if ((date.isEqual(start)) || (date.isEqual(end)) || ((date.isAfter(start)) && (date.isBefore(end)))) {
-                return i;
+            Date startDate;
+            try {
+                startDate = formatter.parse(dates2[0]);
+                Date endDate = formatter.parse(dates2[1]);
+                LocalDate start = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                LocalDate end = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                if ((date.isEqual(start)) || (date.isEqual(end)) || ((date.isAfter(start)) && (date.isBefore(end)))) {
+                    return i;
+                }
+            } catch (ParseException ex) {
+                JOptionPane.showMessageDialog(null, "Imposible realizar la operacion. Revise las fechas.", "Error", JOptionPane.ERROR_MESSAGE);
             }
+
         }
         return -1;
     }
@@ -312,12 +318,12 @@ public class Configuration {
                         seasonsDates[d + 1] = swap;
                         for (int j = 0; j < prices.length; j++) {
                             swap = prices[j][d];
-                            prices[j][d] = prices[j][d+1];
-                            prices[j][d+1] = swap;
+                            prices[j][d] = prices[j][d + 1];
+                            prices[j][d + 1] = swap;
                         }
-                }
+                    }
                 } catch (ParseException ex) {
-                    Logger.getLogger(Configuration.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(null, "Imposible realizar la operacion. Revise las fechas.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
 
             }
