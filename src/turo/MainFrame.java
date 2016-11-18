@@ -3,9 +3,12 @@ package turo;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.logging.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -39,6 +42,7 @@ public class MainFrame extends JFrame {
     private JLabel totalL;
 
     private Configuration configuration;
+    int previousLength = 0;
 
     public MainFrame() {
 
@@ -61,6 +65,14 @@ public class MainFrame extends JFrame {
             @Override
             public void mousePressed(MouseEvent e) {
                 new ConfigurationDialog(MainFrame.this);
+                configuration.updateConfiguration();
+                System.out.println(Arrays.toString(configuration.getRoomsNames()));
+                roomType.removeAllItems();
+                for (String room : configuration.getRoomsNames()) {
+                    roomType.addItem(room);
+                }
+                roomType.validate();
+                roomType.repaint();
             }
 
             @Override
@@ -127,9 +139,14 @@ public class MainFrame extends JFrame {
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(general, BorderLayout.CENTER);
         getContentPane().add(calculate, BorderLayout.SOUTH);
+        
         this.calculate.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
+                    if (discount.getText().equals("Larga estancia") ||discount.getText().equals("Incentivos permantes")) {
+                        discount.setText("");
+                        discountPercent.setText("");
+                    }
                     PairDaysPricesDiscount daysPricesDiscount = new Calculator((String) MainFrame.this.roomType.getSelectedItem(), MainFrame.this.beginDate.getText(), MainFrame.this.endDate.getText(), MainFrame.this.configuration).calculate();
                     PairDaysPrice[] calculate1 = daysPricesDiscount.getPairDaysPrices();
 

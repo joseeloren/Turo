@@ -8,6 +8,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputMethodEvent;
+import java.awt.event.InputMethodListener;
 import java.io.File;
 import java.io.FileWriter;
 import javax.swing.BoxLayout;
@@ -21,6 +23,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
@@ -60,10 +63,11 @@ public class ConfigurationDialog
     private JLabel taxText;
     private JTextField tax;
     private JPanel taxButtons;
+    private JComboBox roomsCombo;
 
     public ConfigurationDialog(final MainFrame frame) {
         super(frame, true);
-
+        
         this.taxButtons = new JPanel();
         this.seasonsText = new JLabel("PRECIOS POR TEMPORADA");
         this.permanentText = new JLabel("INCENTIVOS PERMANENTES");
@@ -119,6 +123,8 @@ public class ConfigurationDialog
         permanent = new JTable();
         seasons = new JTable();
         longEstance = new JTable();
+        
+        
 
         final AbstractTableModel abstractTableModel = new AbstractTableModel() {
             public String getColumnName(int column) {
@@ -160,6 +166,21 @@ public class ConfigurationDialog
             }
 
         };
+        abstractTableModel.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                System.out.println("tableChanged");
+                roomsCombo = new JComboBox();
+                for (int i = 1; i < seasonsData.length; i++) {
+                    roomsCombo.addItem(seasonsData[i][0]);
+                }
+                roomsCombo.addItem("Todos");
+                TableColumn c0 = permanent.getColumnModel().getColumn(0);
+                c0.setCellEditor(new DefaultCellEditor(roomsCombo));
+                TableColumn c1 = longEstance.getColumnModel().getColumn(0);
+                c1.setCellEditor(new DefaultCellEditor(roomsCombo));
+            }
+        });
         this.seasons.setModel(abstractTableModel);
 
         final AbstractTableModel abstractTableModel2 = new AbstractTableModel() {
@@ -205,6 +226,13 @@ public class ConfigurationDialog
         this.permanent.setModel(abstractTableModel2);
 
         String[] roomsNames = frame.getConfiguration().getRoomsNames();
+        
+        roomsCombo = new JComboBox();
+
+        for (String roomsName : roomsNames) {
+            roomsCombo.addItem(roomsName);
+        }
+        roomsCombo.addItem("Todos");
 
         final AbstractTableModel abstractTableModel3 = new AbstractTableModel() {
             public String getColumnName(int column) {
@@ -245,15 +273,9 @@ public class ConfigurationDialog
         this.longEstance.setModel(abstractTableModel3);
 
         TableColumn c0 = permanent.getColumnModel().getColumn(0);
-
-        JComboBox comboBox = new JComboBox();
-
-        for (String roomsName : roomsNames) {
-            comboBox.addItem(roomsName);
-        }
-        comboBox.addItem("Todos");
-
-        c0.setCellEditor(new DefaultCellEditor(comboBox));
+        c0.setCellEditor(new DefaultCellEditor(roomsCombo));
+        TableColumn c1 = longEstance.getColumnModel().getColumn(0);
+        c1.setCellEditor(new DefaultCellEditor(roomsCombo));
 
         TableColumn c01 = permanent.getColumnModel().getColumn(2);
 
@@ -273,16 +295,7 @@ public class ConfigurationDialog
 
         c02.setCellEditor(new DefaultCellEditor(comboBox3));
 
-        TableColumn c1 = longEstance.getColumnModel().getColumn(0);
-
-        JComboBox comboBox4 = new JComboBox();
-
-        for (String roomsName : roomsNames) {
-            comboBox4.addItem(roomsName);
-        }
-        comboBox4.addItem("Todos");
-
-        c1.setCellEditor(new DefaultCellEditor(comboBox4));
+        
 
         TableColumn c2 = longEstance.getColumnModel().getColumn(3);
 
@@ -293,6 +306,8 @@ public class ConfigurationDialog
 
         c2.setCellEditor(new DefaultCellEditor(comboBox5));
 
+        
+        
         this.addSeason.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String[] newColumnNames = new String[ConfigurationDialog.this.seasonsColumnNames.length + 1];
@@ -356,6 +371,7 @@ public class ConfigurationDialog
         this.addRoom.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Object[][] newData = new Object[ConfigurationDialog.this.seasonsData.length + 1][ConfigurationDialog.this.seasonsColumnNames.length];
+                System.out.println(ConfigurationDialog.this.seasonsData.length);
                 for (int i = 0; i < ConfigurationDialog.this.seasonsData.length; i++) {
                     System.arraycopy(ConfigurationDialog.this.seasonsData[i], 0, newData[i], 0, ConfigurationDialog.this.seasonsData[i].length);
                 }
@@ -380,9 +396,7 @@ public class ConfigurationDialog
                     ConfigurationDialog.this.seasonsData = newData;
 
                     ((AbstractTableModel) seasons.getModel()).fireTableDataChanged();
-
                 }
-
             }
         });
         this.removeLongEstance.addActionListener(new ActionListener() {
@@ -553,7 +567,7 @@ public class ConfigurationDialog
                 .setDefaultButton(save);
 
         pack();
-        repaint();
+        
 
         setLocationRelativeTo(null);
         setVisible(true);

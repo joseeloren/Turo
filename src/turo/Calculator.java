@@ -52,7 +52,9 @@ public class Calculator {
             Date endDate = formatter.parse(this.endDate);
 
             start = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            System.out.println("start="+start);
             end = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            System.out.println("end="+end);
 
             for (LocalDate date = start; date.isBefore(end); date = date.plusDays(1L)) {
                 int season = this.configuration.getSeason(date);
@@ -81,9 +83,14 @@ public class Calculator {
                     Date endDate2 = formatter.parse(dates[1]);
                     start2 = startDate2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     end2 = endDate2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    System.out.println("start2="+start2);
+            
+                    System.out.println("end2="+end2);
                     if (longEstance[3].equals("A la llegada")) {
                         for (LocalDate date = start2; date.isBefore(end2); date = date.plusDays(1L)) {
                             if (date.isEqual(start)) {
+                                System.out.println("le llegada");
+                                System.out.println(start);
                                 return new PairDaysPricesDiscount(daysPrices, "Larga estancia", longEstance);
                             }
                         }
@@ -148,13 +155,13 @@ public class Calculator {
                     end2 = endDate2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     if (permanent[2].equals("A la llegada")) {
                         for (LocalDate date = start2; date.isBefore(end2); date = date.plusDays(1L)) {
-                            if (date.isEqual(start2)) {
+                            if (date.isEqual(start)) {
                                 return new PairDaysPricesDiscount(daysPrices, "Incentivos permanentes", permanent);
                             }
                         }
                     } else if (permanent[2].equals("A la salida")) {
                         for (LocalDate date = start2; date.isBefore(end2); date = date.plusDays(1L)) {
-                            if (date.isEqual(end2)) {
+                            if (date.isEqual(end)) {
                                 return new PairDaysPricesDiscount(daysPrices, "Incentivos permanentes", permanent);
                             }
                         }
