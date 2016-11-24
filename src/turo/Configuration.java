@@ -39,11 +39,9 @@ public class Configuration {
 
     public void updateConfiguration() {
 
-        File f = new File(System.getProperty("java.class.path"));
-        File dir = f.getAbsoluteFile().getParentFile();
-        String path = dir.toString();
+     
         
-        File file4 = new File(path + "/longEstance.csv");
+        File file4 = new File("longEstance.csv");
         
         int rows2 = 0;
         if (file4.exists()) {
@@ -92,7 +90,7 @@ public class Configuration {
             }
         }
 
-        File file0 = new File(path + "/permanent.csv");
+        File file0 = new File("permanent.csv");
         int rows = 0;
         if (file0.exists()) {
             try {
@@ -140,7 +138,7 @@ public class Configuration {
             }
         }
 
-        File file = new File(path + "/seasons.csv");
+        File file = new File("seasons.csv");
 
         if (file.exists()) {
             try {
@@ -190,7 +188,7 @@ public class Configuration {
             }
         }
 
-        File file2 = new File(path + "/tax.csv");
+        File file2 = new File("tax.csv");
 
         if (file2.exists()) {
             try {
@@ -249,10 +247,7 @@ public class Configuration {
         return this.rooms;
     }
 
-    public String[][] getPrices() {
-
-        return this.prices;
-    }
+  
 
     public String[] getRoomsNames() {
         String[] result = new String[this.rooms];
@@ -270,7 +265,7 @@ public class Configuration {
 
                     return 0;
                 }
-                return Double.parseDouble(this.prices[i][season]);
+                return Double.parseDouble(this.prices[i][season].replace(',', '.'));
             }
         }
         return 0;

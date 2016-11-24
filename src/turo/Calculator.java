@@ -102,7 +102,7 @@ public class Calculator {
                         }
                     }
                 } catch (ParseException ex) {
-                    JOptionPane.showMessageDialog(null, "Imposible realizar la operacion. Revise las fechas.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Imposible realizar la operacion. Revise las getPrices.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
 
                 break;

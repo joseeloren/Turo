@@ -7,13 +7,22 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Properties;
 import java.util.logging.*;
+import javafx.scene.control.DatePicker;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
+import org.jdatepicker.JDatePicker;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
 
 public class MainFrame extends JFrame {
 
@@ -22,8 +31,8 @@ public class MainFrame extends JFrame {
     private JButton calculate;
 
     private JComboBox roomType;
-    private JTextField beginDate;
-    private JTextField endDate;
+    private JDatePickerImpl beginDate;
+    private JDatePickerImpl endDate;
     private JTextField discount;
     private JTextField discountPercent;
     private JTextField baseImponible;
@@ -91,9 +100,6 @@ public class MainFrame extends JFrame {
             }
         });
         roomType = new JComboBox(configuration.getRoomsNames());
-        beginDate = new JTextField(10);
-
-        endDate = new JTextField(10);
         discount = new JTextField();
         discountPercent = new JTextField();
         alojamiento = new JTextField();
@@ -106,13 +112,50 @@ public class MainFrame extends JFrame {
         total.setEditable(false);
         roomTypeL = new JLabel("Tipo habitacion:");
         alojamientoL = new JLabel("Alojamiento:");
-        beginDateL = new JLabel("Fecha entrada (dd/mm/yyyy):");
-        endDateL = new JLabel("Fecha salida (dd/mm/yyyy):");
+        beginDateL = new JLabel("Fecha entrada (dd/mm/yy):");
+        endDateL = new JLabel("Fecha salida (dd/mm/yy):");
         discountL = new JLabel("Tipo descuento:");
         discountPercentL = new JLabel("Descuento:");
         baseImponibleL = new JLabel("Base imponible:");
         igicL = new JLabel("IGIC:");
         totalL = new JLabel("Total:");
+
+        UtilDateModel model = new UtilDateModel();
+                UtilDateModel model2 = new UtilDateModel();
+
+        Properties p = new Properties();
+        p.put("text.today", "Hoy");
+        p.put("text.month", "Mes");
+        p.put("text.year", "Año");
+
+        class DateLabelFormatter extends JFormattedTextField.AbstractFormatter {
+
+            private String datePattern = "dd/MM/yy";
+            private SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+
+            @Override
+            public Object stringToValue(String text) throws ParseException {
+                return dateFormatter.parseObject(text);
+            }
+
+            @Override
+            public String valueToString(Object value) throws ParseException {
+                if (value != null) {
+                    Calendar cal = (Calendar) value;
+                    return dateFormatter.format(cal.getTime());
+                }
+
+                return "";
+            }
+
+        }
+        JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+
+        beginDate = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+
+        JDatePanelImpl datePanel2 = new JDatePanelImpl(model2, p);
+
+        endDate = new JDatePickerImpl(datePanel2, new DateLabelFormatter());
 
         getRootPane()
                 .setDefaultButton(calculate);
@@ -139,15 +182,21 @@ public class MainFrame extends JFrame {
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(general, BorderLayout.CENTER);
         getContentPane().add(calculate, BorderLayout.SOUTH);
-        
+
         this.calculate.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (discount.getText().equals("Larga estancia") ||discount.getText().equals("Incentivos permantes")) {
+                    if (discount.getText().equals("Larga estancia") || discount.getText().equals("Incentivos permantes")) {
                         discount.setText("");
                         discountPercent.setText("");
                     }
-                    PairDaysPricesDiscount daysPricesDiscount = new Calculator((String) MainFrame.this.roomType.getSelectedItem(), MainFrame.this.beginDate.getText(), MainFrame.this.endDate.getText(), MainFrame.this.configuration).calculate();
+                    System.out.println("calculator");
+                     DateFormat df = new SimpleDateFormat("dd/MM/yy");
+                    String bg = df.format(beginDate.getModel().getValue());
+                    String ed = df.format(endDate.getModel().getValue());
+                    System.out.println(bg);
+                    System.out.println(ed);
+                    PairDaysPricesDiscount daysPricesDiscount = new Calculator((String) MainFrame.this.roomType.getSelectedItem(),bg,ed, MainFrame.this.configuration).calculate();
                     PairDaysPrice[] calculate1 = daysPricesDiscount.getPairDaysPrices();
 
                     double finalPrice = 0;
@@ -235,7 +284,7 @@ public class MainFrame extends JFrame {
         );
 
         setTitle("Turo");
-        setIconImage((new ImageIcon(getClass().getClassLoader().getResource("resources/icon.png")).getImage()));
+        setIconImage(new ImageIcon("icon.png").getImage());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         setSize(400, 300);

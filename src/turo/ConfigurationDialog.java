@@ -430,11 +430,12 @@ public class ConfigurationDialog
         });
         this.save.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                File f = new File(System.getProperty("java.class.path"));
-                File dir = f.getAbsoluteFile().getParentFile();
-                String path = dir.toString();
-
-                File fileR = new File(path + "/longEstance.csv");
+                ((AbstractTableModel) ConfigurationDialog.this.permanent.getModel()).fireTableDataChanged();
+                ((AbstractTableModel) ConfigurationDialog.this.longEstance.getModel()).fireTableDataChanged();
+                ((AbstractTableModel) ConfigurationDialog.this.seasons.getModel()).fireTableDataChanged();
+                
+               
+                File fileR = new File("longEstance.csv");
 
                 try {
                     fileR.createNewFile();
@@ -456,9 +457,10 @@ public class ConfigurationDialog
                     }
                     writer.close();
                 } catch (Exception localException) {
+                    System.out.println("FALLOOOO");
                 }
 
-                File file0 = new File(path + "/permanent.csv");
+                File file0 = new File("permanent.csv");
 
                 try {
                     file0.createNewFile();
@@ -481,7 +483,7 @@ public class ConfigurationDialog
                 } catch (Exception localException) {
                 }
 
-                File file = new File(path + "/seasons.csv");
+                File file = new File("seasons.csv");
 
                 try {
                     file.createNewFile();
@@ -505,7 +507,7 @@ public class ConfigurationDialog
                 } catch (Exception localException) {
                 }
 
-                File file2 = new File(path + "/tax.csv");
+                File file2 = new File("tax.csv");
                 
 
                 try {
