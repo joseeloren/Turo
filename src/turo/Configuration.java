@@ -38,9 +38,6 @@ public class Configuration {
     }
 
     public void updateConfiguration() {
-
-     
-        
         File file4 = new File("longEstance.csv");
         
         int rows2 = 0;
@@ -298,8 +295,8 @@ public class Configuration {
 
     private void orderSeasons() {
         int n = seasonsDates.length;
-        for (int c = 1; c < (n - 1); c++) {
-            for (int d = 1; d < n - c - 1; d++) {
+        for (int c = 1; c < n-1; c++) {
+            for (int d = 1; d < n-c; d++) {
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
                 try {
                     Date d1 = formatter.parse(seasonsDates[d].split("-")[0]);
@@ -317,6 +314,7 @@ public class Configuration {
                         }
                     }
                 } catch (ParseException ex) {
+                    System.out.println(ex.getMessage());
                     JOptionPane.showMessageDialog(null, "Imposible realizar la operacion. Revise las fechas.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
 

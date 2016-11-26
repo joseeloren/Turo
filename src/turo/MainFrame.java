@@ -115,7 +115,7 @@ public class MainFrame extends JFrame {
         beginDateL = new JLabel("Fecha entrada (dd/mm/yy):");
         endDateL = new JLabel("Fecha salida (dd/mm/yy):");
         discountL = new JLabel("Tipo descuento:");
-        discountPercentL = new JLabel("Descuento:");
+        discountPercentL = new JLabel("Descuento(%):");
         baseImponibleL = new JLabel("Base imponible:");
         igicL = new JLabel("IGIC:");
         totalL = new JLabel("Total:");
@@ -186,16 +186,13 @@ public class MainFrame extends JFrame {
         this.calculate.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (discount.getText().equals("Larga estancia") || discount.getText().equals("Incentivos permantes")) {
+                    if (discount.getText().equals("Larga estancia") || discount.getText().equals("Incentivos permanentes")) {
                         discount.setText("");
                         discountPercent.setText("");
                     }
-                    System.out.println("calculator");
-                     DateFormat df = new SimpleDateFormat("dd/MM/yy");
+                    DateFormat df = new SimpleDateFormat("dd/MM/yy");
                     String bg = df.format(beginDate.getModel().getValue());
                     String ed = df.format(endDate.getModel().getValue());
-                    System.out.println(bg);
-                    System.out.println(ed);
                     PairDaysPricesDiscount daysPricesDiscount = new Calculator((String) MainFrame.this.roomType.getSelectedItem(),bg,ed, MainFrame.this.configuration).calculate();
                     PairDaysPrice[] calculate1 = daysPricesDiscount.getPairDaysPrices();
 
@@ -207,7 +204,27 @@ public class MainFrame extends JFrame {
                         }
                     }
 
-                    if ((discount.getText().equals("Incentivos permanentes") || discount.getText().equals("Larga estancia") || discount.getText().equals("")) && daysPricesDiscount.getDiscountType().equals("Incentivos permanentes")) {
+                    
+                    double calculopermanente = Double.MAX_VALUE;
+                    double calculolarga = Double.MAX_VALUE;
+                    double calculopersonalizado = Double.MAX_VALUE;
+                    
+                    if (!discount.getText().equals("")) {
+                        calculopersonalizado = 0;
+                        for (int i = 0; i < calculate1.length; i++) {
+                            if (calculate1[i].getDays() > 0 || calculate1[i].getPrice() > 0) {
+                                calculopersonalizado += calculate1[i].getDays() * calculate1[i].getPrice();
+                            }
+                        }
+
+                        try {
+                            calculopersonalizado = calculopersonalizado - calculopersonalizado * (Double.parseDouble(discountPercent.getText()) / 100);
+                        } catch (Exception e1) {
+                            JOptionPane.showMessageDialog(null, "Tipo de descuento incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                    
+                    if (daysPricesDiscount.getDiscountType().equals("Incentivos permanentes")) {
                         String[] da = daysPricesDiscount.getDiscount()[1].split("=");
                         int dai = Math.abs(Integer.parseInt(da[0]) - Integer.parseInt(da[1]));
                         if (daysPricesDiscount.getDiscount()[4].equals("Ultimos")) {
@@ -232,36 +249,37 @@ public class MainFrame extends JFrame {
                             }
 
                         }
-                        discountPercent.setText(daysPricesDiscount.getDiscount()[4] + " " + daysPricesDiscount.getDiscount()[1]);
+                        calculopermanente = 0;
                         for (int i = 0; i < calculate1.length; i++) {
                             if (calculate1[i].getDays() > 0 || calculate1[i].getPrice() > 0) {
-                                finalPrice += calculate1[i].getDays() * calculate1[i].getPrice();
+                                calculopermanente += calculate1[i].getDays() * calculate1[i].getPrice();
                             }
                         }
-                        discount.setText(daysPricesDiscount.getDiscountType());
-                    } else if ((discount.getText().equals("Incentivos permanentes") || discount.getText().equals("Larga estancia") || discount.getText().equals("")) && daysPricesDiscount.getDiscountType().equals("Larga estancia")) {
+                    } else if (daysPricesDiscount.getDiscountType().equals("Larga estancia")) {
+                        calculolarga=0;
                         for (int i = 0; i < calculate1.length; i++) {
                             if (calculate1[i].getDays() > 0 || calculate1[i].getPrice() > 0) {
-                                finalPrice += calculate1[i].getDays() * calculate1[i].getPrice();
+                                calculolarga += calculate1[i].getDays() * calculate1[i].getPrice();
                             }
                         }
                         double dis = Double.parseDouble(daysPricesDiscount.getDiscount()[1]);
-                        discountPercent.setText(daysPricesDiscount.getDiscount()[1]);
-                        finalPrice = finalPrice - (dis / 100) * finalPrice;
+                        calculolarga = calculolarga - (dis / 100) * calculolarga;
+                    } 
+                    
+                    
+                    System.out.println("calculopermanente="+calculopermanente);
+                    System.out.println("calculolarga="+calculolarga);
+                    System.out.println("calculopersonalizado="+calculopersonalizado);
+                    
+                    finalPrice = Double.min(Double.min(calculolarga,calculopermanente), calculopersonalizado);
+                    if (finalPrice == calculopermanente) {
+                        discountPercent.setText(daysPricesDiscount.getDiscount()[4] + " " + daysPricesDiscount.getDiscount()[1]);
                         discount.setText(daysPricesDiscount.getDiscountType());
-                    } else {
-                        for (int i = 0; i < calculate1.length; i++) {
-                            if (calculate1[i].getDays() > 0 || calculate1[i].getPrice() > 0) {
-                                finalPrice += calculate1[i].getDays() * calculate1[i].getPrice();
-                            }
-                        }
-
-                        if (!discount.getText().equals("Incentivos permanentes") && !discount.getText().equals("Larga estancia") && !discount.getText().equals("")) {
-
-                            finalPrice = finalPrice - finalPrice * ((double) Integer.parseInt(discountPercent.getText()) / 100);
-
-                        }
-
+                    } else if (finalPrice == calculolarga) {
+                        discountPercent.setText(daysPricesDiscount.getDiscount()[1]);
+                        discount.setText(daysPricesDiscount.getDiscountType());
+                    } else if (finalPrice == calculopersonalizado) {
+                        
                     }
 
                     if (aloja.length() > 1) {
