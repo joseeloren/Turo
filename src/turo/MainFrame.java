@@ -121,7 +121,7 @@ public class MainFrame extends JFrame {
         totalL = new JLabel("Total:");
 
         UtilDateModel model = new UtilDateModel();
-                UtilDateModel model2 = new UtilDateModel();
+        UtilDateModel model2 = new UtilDateModel();
 
         Properties p = new Properties();
         p.put("text.today", "Hoy");
@@ -152,10 +152,21 @@ public class MainFrame extends JFrame {
         JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
 
         beginDate = new JDatePickerImpl(datePanel, new DateLabelFormatter());
-
+        
+        
+        
         JDatePanelImpl datePanel2 = new JDatePanelImpl(model2, p);
 
         endDate = new JDatePickerImpl(datePanel2, new DateLabelFormatter());
+        
+        beginDate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                endDate.getModel().setMonth(beginDate.getModel().getMonth());
+                endDate.getModel().setYear(beginDate.getModel().getYear());
+            }
+        });
+
 
         getRootPane()
                 .setDefaultButton(calculate);
@@ -196,7 +207,7 @@ public class MainFrame extends JFrame {
                     PairDaysPricesDiscount daysPricesDiscount = new Calculator((String) MainFrame.this.roomType.getSelectedItem(),bg,ed, MainFrame.this.configuration).calculate();
                     PairDaysPrice[] calculate1 = daysPricesDiscount.getPairDaysPrices();
 
-                    double finalPrice = 0;
+                    double finalPrice = Double.MAX_VALUE;
                     String aloja = "";
                     for (int i = 0; i < calculate1.length; i++) {
                         if (calculate1[i].getDays() > 0 || calculate1[i].getPrice() > 0) {
@@ -208,6 +219,15 @@ public class MainFrame extends JFrame {
                     double calculopermanente = Double.MAX_VALUE;
                     double calculolarga = Double.MAX_VALUE;
                     double calculopersonalizado = Double.MAX_VALUE;
+                    
+                    
+                    finalPrice = 0;
+                        for (int i = 0; i < calculate1.length; i++) {
+                            if (calculate1[i].getDays() > 0 || calculate1[i].getPrice() > 0) {
+                                finalPrice += calculate1[i].getDays() * calculate1[i].getPrice();
+                            }
+                        }
+
                     
                     if (!discount.getText().equals("")) {
                         calculopersonalizado = 0;
@@ -271,8 +291,12 @@ public class MainFrame extends JFrame {
                     System.out.println("calculolarga="+calculolarga);
                     System.out.println("calculopersonalizado="+calculopersonalizado);
                     
-                    finalPrice = Double.min(Double.min(calculolarga,calculopermanente), calculopersonalizado);
+                    finalPrice = Double.min(Double.min(calculolarga,calculopermanente), Double.min(calculopersonalizado,finalPrice));
                     if (finalPrice == calculopermanente) {
+                        System.out.println("DEBUG");
+                        System.out.println("daysPricesDiscount.getDiscount()[4]"+daysPricesDiscount.getDiscount()[4]);
+                        System.out.println("daysPricesDiscount.getDiscount()[1]"+daysPricesDiscount.getDiscount()[1]);
+                        System.out.println("DEBUG");
                         discountPercent.setText(daysPricesDiscount.getDiscount()[4] + " " + daysPricesDiscount.getDiscount()[1]);
                         discount.setText(daysPricesDiscount.getDiscountType());
                     } else if (finalPrice == calculolarga) {
@@ -280,6 +304,9 @@ public class MainFrame extends JFrame {
                         discount.setText(daysPricesDiscount.getDiscountType());
                     } else if (finalPrice == calculopersonalizado) {
                         
+                    } else {
+                        discountPercent.setText("");
+                        discount.setText("");
                     }
 
                     if (aloja.length() > 1) {
