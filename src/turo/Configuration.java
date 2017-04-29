@@ -3,7 +3,12 @@ package turo;
 import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.LineNumberReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -37,9 +42,27 @@ public class Configuration {
         return tax;
     }
 
-    public void updateConfiguration() {
-        File file4 = new File("longEstance.csv");
+    public void updateConfiguration() throws UnsupportedEncodingException, IOException {
+
+        String path = Configuration.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String decodedPath = URLDecoder.decode(path, "UTF-8");
+        int i = decodedPath.lastIndexOf("/");
+        decodedPath = decodedPath.substring(0, i+1);
+        System.out.println(decodedPath);
         
+
+        File dir = new File(System.getProperty("user.home") + "/Turo/");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+
+        File file4 = new File(dir.getAbsolutePath() + "/longEstance.csv");
+        File file41 = new File(decodedPath + "longEstance.csv");
+        
+        if (!file4.exists()) {    
+            Files.copy(file41.toPath(), file4.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        }
+
         int rows2 = 0;
         if (file4.exists()) {
             try {
@@ -87,7 +110,15 @@ public class Configuration {
             }
         }
 
-        File file0 = new File("permanent.csv");
+        File file0 = new File(dir.getAbsolutePath()  + "/permanent.csv");
+        
+        File file01 = new File(decodedPath + "permanent.csv");
+
+        if (!file0.exists()) {    
+            Files.copy(file01.toPath(), file0.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        }
+        
+    
         int rows = 0;
         if (file0.exists()) {
             try {
@@ -135,7 +166,13 @@ public class Configuration {
             }
         }
 
-        File file = new File("seasons.csv");
+        File file = new File(dir.getAbsolutePath() + "/seasons.csv");
+
+         File file11 = new File(decodedPath + "seasons.csv");
+
+        if (!file.exists()) {    
+            Files.copy(file11.toPath(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        }
 
         if (file.exists()) {
             try {
@@ -185,8 +222,13 @@ public class Configuration {
             }
         }
 
-        File file2 = new File("tax.csv");
+        File file2 = new File(dir.getAbsolutePath() + "/tax.csv");
 
+        File file22 = new File(decodedPath + "tax.csv");
+
+        if (!file2.exists()) {    
+            Files.copy(file22.toPath(), file2.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        }
         if (file2.exists()) {
             try {
                 BufferedReader br = new BufferedReader(new java.io.FileReader(file2));
@@ -244,8 +286,6 @@ public class Configuration {
         return this.rooms;
     }
 
-  
-
     public String[] getRoomsNames() {
         String[] result = new String[this.rooms];
         for (int i = 0; i < this.rooms; i++) {
@@ -295,8 +335,8 @@ public class Configuration {
 
     private void orderSeasons() {
         int n = seasonsDates.length;
-        for (int c = 1; c < n-1; c++) {
-            for (int d = 1; d < n-c; d++) {
+        for (int c = 1; c < n - 1; c++) {
+            for (int d = 1; d < n - c; d++) {
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
                 try {
                     Date d1 = formatter.parse(seasonsDates[d].split("-")[0]);

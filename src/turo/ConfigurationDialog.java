@@ -12,12 +12,16 @@ import java.awt.event.InputMethodEvent;
 import java.awt.event.InputMethodListener;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -68,7 +72,7 @@ public class ConfigurationDialog
 
     public ConfigurationDialog(final MainFrame frame) {
         super(frame, true);
-        
+
         this.taxButtons = new JPanel();
         this.seasonsText = new JLabel("PRECIOS POR TEMPORADA");
         this.permanentText = new JLabel("INCENTIVOS PERMANENTES");
@@ -124,8 +128,6 @@ public class ConfigurationDialog
         permanent = new JTable();
         seasons = new JTable();
         longEstance = new JTable();
-        
-        
 
         final AbstractTableModel abstractTableModel = new AbstractTableModel() {
             public String getColumnName(int column) {
@@ -227,7 +229,7 @@ public class ConfigurationDialog
         this.permanent.setModel(abstractTableModel2);
 
         String[] roomsNames = frame.getConfiguration().getRoomsNames();
-        
+
         roomsCombo = new JComboBox();
 
         for (String roomsName : roomsNames) {
@@ -296,8 +298,6 @@ public class ConfigurationDialog
 
         c02.setCellEditor(new DefaultCellEditor(comboBox3));
 
-        
-
         TableColumn c2 = longEstance.getColumnModel().getColumn(3);
 
         JComboBox comboBox5 = new JComboBox();
@@ -307,8 +307,6 @@ public class ConfigurationDialog
 
         c2.setCellEditor(new DefaultCellEditor(comboBox5));
 
-        
-        
         this.addSeason.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String[] newColumnNames = new String[ConfigurationDialog.this.seasonsColumnNames.length + 1];
@@ -437,8 +435,14 @@ public class ConfigurationDialog
                 ConfigurationDialog.this.permanent.getSelectionModel().clearSelection();
                 ConfigurationDialog.this.longEstance.getSelectionModel().clearSelection();
                 ConfigurationDialog.this.seasons.getSelectionModel().clearSelection();
-               
-                File fileR = new File("longEstance.csv");
+
+                File dir = new File(System.getProperty("user.home") + "/Turo/");
+
+                File fileR = new File(dir.getAbsolutePath() + "/longEstance.csv");
+
+                if (!fileR.canWrite()) {
+                    JOptionPane.showMessageDialog(null, "No se puede escribir " + fileR.getName(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
 
                 try {
                     fileR.createNewFile();
@@ -460,10 +464,16 @@ public class ConfigurationDialog
                     }
                     writer.close();
                 } catch (Exception localException) {
-                    System.out.println("FALLOOOO");
+                    if (!fileR.canWrite()) {
+                        JOptionPane.showMessageDialog(null, "Expcecion al escribir " + fileR.getName(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
 
-                File file0 = new File("permanent.csv");
+                File file0 = new File(dir.getAbsolutePath() + "/permanent.csv");
+
+                if (!file0.canWrite()) {
+                    JOptionPane.showMessageDialog(null, "No se puede escribir " + file0.getName(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
 
                 try {
                     file0.createNewFile();
@@ -484,9 +494,16 @@ public class ConfigurationDialog
                     }
                     writer.close();
                 } catch (Exception localException) {
+                    if (!file0.canWrite()) {
+                        JOptionPane.showMessageDialog(null, "Expcecion al escribir " + file0.getName(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
 
-                File file = new File("seasons.csv");
+                File file = new File(dir.getAbsolutePath() + "/seasons.csv");
+
+                if (!file.canWrite()) {
+                    JOptionPane.showMessageDialog(null, "No se puede escribir " + file.getName(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
 
                 try {
                     file.createNewFile();
@@ -508,10 +525,16 @@ public class ConfigurationDialog
                     }
                     writer.close();
                 } catch (Exception localException) {
+                    if (!file.canWrite()) {
+                        JOptionPane.showMessageDialog(null, "Expcecion al escribir " + file.getName(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
 
-                File file2 = new File("tax.csv");
-                
+                File file2 = new File(dir.getAbsolutePath() + "/tax.csv");
+
+                if (!file2.canWrite()) {
+                    JOptionPane.showMessageDialog(null, "No se puede escribir " + file2.getName(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
 
                 try {
                     file2.createNewFile();
@@ -522,8 +545,15 @@ public class ConfigurationDialog
                     writer.flush();
                     writer.close();
                 } catch (Exception localException) {
+                    if (!file2.canWrite()) {
+                        JOptionPane.showMessageDialog(null, "Expcecion al escribir " + file2.getName(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
-                frame.getConfiguration().updateConfiguration();
+                try {
+                    frame.getConfiguration().updateConfiguration();
+                } catch (IOException ex) {
+                    Logger.getLogger(ConfigurationDialog.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 ConfigurationDialog.this.setVisible(false);
                 ConfigurationDialog.this.dispose();
             }
@@ -556,12 +586,12 @@ public class ConfigurationDialog
         p1.add(seasonsText);
         p2.add(permanentText);
         p3.add(longEstanceText);
-        
+
         seasons.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         resizeColumnWidth(seasons);
         resizeColumnWidth(permanent);
         resizeColumnWidth(longEstance);
-        
+
         getContentPane().add(p1);
         getContentPane().add(new JScrollPane(seasons, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
         getContentPane().add(this.seasonsButtons);
@@ -577,16 +607,15 @@ public class ConfigurationDialog
                 .setDefaultButton(save);
 
         pack();
-        
 
         setLocationRelativeTo(null);
         setVisible(true);
     }
-    
+
     public void resizeColumnWidth(JTable table) {
-    final TableColumnModel columnModel = table.getColumnModel();
-    for (int column = 0; column < table.getColumnCount(); column++) {
-        int width = 15; // Min width
+        final TableColumnModel columnModel = table.getColumnModel();
+        for (int column = 0; column < table.getColumnCount(); column++) {
+            int width = 15; // Min width
             for (int row = 0; row < table.getRowCount(); row++) {
                 TableCellRenderer renderer = table.getCellRenderer(row, column);
                 Component comp = table.prepareRenderer(renderer, row, column);

@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,7 +54,7 @@ public class MainFrame extends JFrame {
     private Configuration configuration;
     int previousLength = 0;
 
-    public MainFrame() {
+    public MainFrame() throws IOException {
 
         configuration = new Configuration();
         configuration.updateConfiguration();
@@ -74,7 +75,11 @@ public class MainFrame extends JFrame {
             @Override
             public void mousePressed(MouseEvent e) {
                 new ConfigurationDialog(MainFrame.this);
-                configuration.updateConfiguration();
+                try {
+                    configuration.updateConfiguration();
+                } catch (IOException ex) {
+                    Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 System.out.println(Arrays.toString(configuration.getRoomsNames()));
                 roomType.removeAllItems();
                 for (String room : configuration.getRoomsNames()) {
