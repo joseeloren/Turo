@@ -329,16 +329,28 @@ public class ConfigurationDialog
             public void actionPerformed(ActionEvent e) {
                 if (ConfigurationDialog.this.seasonsData[0].length > 2) {
                     String[] newColumnNames = new String[ConfigurationDialog.this.seasonsData[0].length - 1];
-                    System.arraycopy(ConfigurationDialog.this.seasonsColumnNames, 0, newColumnNames, 0, ConfigurationDialog.this.seasonsData[0].length - 1);
+                    System.arraycopy(ConfigurationDialog.this.seasonsColumnNames, 1, newColumnNames, 0, newColumnNames.length);
+                    JLabel label = new JLabel("Elija la temporada a quitar:");
+                    JComboBox combo = new JComboBox(newColumnNames);
+                    JPanel panel = new JPanel();
+                    panel.add(label);
+                    panel.add(combo);
+                    int option = JOptionPane.showOptionDialog(null, panel, "Quitar temporada", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+                    if (option == JOptionPane.OK_OPTION) {
+                        int tempo = Integer.parseInt(((String)combo.getSelectedItem()).split(" ")[1]);
+                        newColumnNames = new String[ConfigurationDialog.this.seasonsData[0].length - 1];
+                        System.arraycopy(ConfigurationDialog.this.seasonsColumnNames, 0, newColumnNames, 0, newColumnNames.length);
+                        
+                        Object[][] newData = new Object[ConfigurationDialog.this.seasonsData.length][ConfigurationDialog.this.seasonsData[0].length - 1];
+                        for (int i = 0; i < ConfigurationDialog.this.seasonsData.length; i++) {
+                            System.arraycopy(ConfigurationDialog.this.seasonsData[i], 0, newData[i], 0, tempo);
+                            System.arraycopy(ConfigurationDialog.this.seasonsData[i], tempo+1, newData[i], tempo, ConfigurationDialog.this.seasonsData[i].length - 1-tempo);
+                        }
+                        ConfigurationDialog.this.seasonsColumnNames = newColumnNames;
+                        ConfigurationDialog.this.seasonsData = newData;
 
-                    Object[][] newData = new Object[ConfigurationDialog.this.seasonsData.length][ConfigurationDialog.this.seasonsData[0].length - 1];
-                    for (int i = 0; i < ConfigurationDialog.this.seasonsData.length; i++) {
-                        System.arraycopy(ConfigurationDialog.this.seasonsData[i], 0, newData[i], 0, ConfigurationDialog.this.seasonsData[i].length - 1);
+                        ((AbstractTableModel) seasons.getModel()).fireTableStructureChanged();
                     }
-                    ConfigurationDialog.this.seasonsColumnNames = newColumnNames;
-                    ConfigurationDialog.this.seasonsData = newData;
-
-                    ((AbstractTableModel) seasons.getModel()).fireTableStructureChanged();
                 }
 
             }
