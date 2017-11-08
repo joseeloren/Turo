@@ -64,7 +64,13 @@ public class MainFrame extends JFrame {
         calculate = new JButton("Calcular");
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Configuración");
+        JMenu menu2 = new JMenu("Importar/Exportar");
+        JMenuItem imp = new JMenuItem("Importar");
+        JMenuItem exp = new JMenuItem("Exportar");
+        menu2.add(imp);
+        menu2.add(exp);
         menuBar.add(menu);
+        menuBar.add(menu2);
         this.setJMenuBar(menuBar);
         menu.addMouseListener(new MouseListener() {
             @Override
@@ -74,12 +80,13 @@ public class MainFrame extends JFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                new ConfigurationDialog(MainFrame.this);
+                
                 try {
                     configuration.updateConfiguration();
                 } catch (IOException ex) {
                     Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                new ConfigurationDialog(MainFrame.this);
                 System.out.println(Arrays.toString(configuration.getRoomsNames()));
                 roomType.removeAllItems();
                 for (String room : configuration.getRoomsNames()) {
@@ -104,6 +111,53 @@ public class MainFrame extends JFrame {
 
             }
         });
+        
+        exp.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                new ImportExportDialog(MainFrame.this, 1);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        
+        imp.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                new ImportExportDialog(MainFrame.this, 2);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        
         roomType = new JComboBox(configuration.getRoomsNames());
         discount = new JTextField();
         discountPercent = new JTextField();
