@@ -30,7 +30,7 @@ public class ImportExportDialog extends JDialog {
         super(frame, true);
         String texto = (mode == 2) ? "Importar" : "Exportar";
         setTitle(texto);
-        File currentDirectory = FileSystemView.getFileSystemView().getHomeDirectory();
+        File currentDirectory = new File(System.getProperty("user.home") + "/Desktop/");
         JFileChooser fileChooser = new JFileChooser(currentDirectory);
         fileChooser.setApproveButtonText(texto);
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("*.tur", "tur"));
@@ -44,7 +44,7 @@ public class ImportExportDialog extends JDialog {
         }
         int returnVal = (mode == 2) ? fileChooser.showOpenDialog(frame) : fileChooser.showSaveDialog(frame);
 
-        String dir = System.getProperty("user.home") + "/Turo/";
+        File dir = new File(System.getProperty("user.home") + "/Turo/");
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             if (mode == 2) { //Importar
                 try {
@@ -56,7 +56,7 @@ public class ImportExportDialog extends JDialog {
                         int count;
                         byte data[] = new byte[BUFFER];
                         // write the files to the disk
-                        FileOutputStream fos = new FileOutputStream(dir + entry.getName());
+                        FileOutputStream fos = new FileOutputStream(dir.getAbsolutePath() + "/" + entry.getName());
                         dest = new BufferedOutputStream(fos, BUFFER);
                         while ((count = zis.read(data, 0, BUFFER))
                                 != -1) {
@@ -78,14 +78,14 @@ public class ImportExportDialog extends JDialog {
                     byte data[] = new byte[BUFFER];
                     // get a list of files from current directory
                     
-                    File f = new File(dir);
-                    String files[] = f.list();
+                    File files[] = dir.getAbsoluteFile().listFiles();
+                    System.out.println(dir.getAbsolutePath());
 
                     for (int i = 0; i < files.length; i++) {
-                        System.out.println("Adding: " + files[i]);
+                        System.out.println("Adding: " + files[i].getAbsolutePath());
                         FileInputStream fi = new FileInputStream(files[i]);
                         origin = new BufferedInputStream(fi, BUFFER);
-                        ZipEntry entry = new ZipEntry(files[i]);
+                        ZipEntry entry = new ZipEntry(files[i].getName());
                         out.putNextEntry(entry);
                         int count;
                         while ((count = origin.read(data, 0,
