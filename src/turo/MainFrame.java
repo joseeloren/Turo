@@ -80,7 +80,7 @@ public class MainFrame extends JFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                
+
                 try {
                     configuration.updateConfiguration();
                 } catch (IOException ex) {
@@ -111,7 +111,7 @@ public class MainFrame extends JFrame {
 
             }
         });
-        
+
         exp.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -134,7 +134,7 @@ public class MainFrame extends JFrame {
             public void mouseExited(MouseEvent e) {
             }
         });
-        
+
         imp.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -157,7 +157,7 @@ public class MainFrame extends JFrame {
             public void mouseExited(MouseEvent e) {
             }
         });
-        
+
         roomType = new JComboBox(configuration.getRoomsNames());
         discount = new JTextField();
         discountPercent = new JTextField();
@@ -211,13 +211,11 @@ public class MainFrame extends JFrame {
         JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
 
         beginDate = new JDatePickerImpl(datePanel, new DateLabelFormatter());
-        
-        
-        
+
         JDatePanelImpl datePanel2 = new JDatePanelImpl(model2, p);
 
         endDate = new JDatePickerImpl(datePanel2, new DateLabelFormatter());
-        
+
         beginDate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -225,7 +223,6 @@ public class MainFrame extends JFrame {
                 endDate.getModel().setYear(beginDate.getModel().getYear());
             }
         });
-
 
         getRootPane()
                 .setDefaultButton(calculate);
@@ -263,7 +260,7 @@ public class MainFrame extends JFrame {
                     DateFormat df = new SimpleDateFormat("dd/MM/yy");
                     String bg = df.format(beginDate.getModel().getValue());
                     String ed = df.format(endDate.getModel().getValue());
-                    PairDaysPricesDiscount daysPricesDiscount = new Calculator((String) MainFrame.this.roomType.getSelectedItem(),bg,ed, MainFrame.this.configuration).calculate();
+                    PairDaysPricesDiscount daysPricesDiscount = new Calculator((String) MainFrame.this.roomType.getSelectedItem(), bg, ed, MainFrame.this.configuration).calculate();
                     PairDaysPrice[] calculate1 = daysPricesDiscount.getPairDaysPrices();
 
                     double finalPrice = Double.MAX_VALUE;
@@ -274,20 +271,17 @@ public class MainFrame extends JFrame {
                         }
                     }
 
-                    
                     double calculopermanente = Double.MAX_VALUE;
                     double calculolarga = Double.MAX_VALUE;
                     double calculopersonalizado = Double.MAX_VALUE;
-                    
-                    
-                    finalPrice = 0;
-                        for (int i = 0; i < calculate1.length; i++) {
-                            if (calculate1[i].getDays() > 0 || calculate1[i].getPrice() > 0) {
-                                finalPrice += calculate1[i].getDays() * calculate1[i].getPrice();
-                            }
-                        }
 
-                    
+                    finalPrice = 0;
+                    for (int i = 0; i < calculate1.length; i++) {
+                        if (calculate1[i].getDays() > 0 || calculate1[i].getPrice() > 0) {
+                            finalPrice += calculate1[i].getDays() * calculate1[i].getPrice();
+                        }
+                    }
+
                     if (!discount.getText().equals("")) {
                         calculopersonalizado = 0;
                         for (int i = 0; i < calculate1.length; i++) {
@@ -302,8 +296,9 @@ public class MainFrame extends JFrame {
                             JOptionPane.showMessageDialog(null, "Tipo de descuento incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     }
-                    
+
                     if (daysPricesDiscount.getDiscountType().equals("Incentivos permanentes")) {
+                        System.out.println("Hay incentivos permantes");
                         String[] da = daysPricesDiscount.getDiscount()[1].split("=");
                         int dai = Math.abs(Integer.parseInt(da[0]) - Integer.parseInt(da[1]));
                         if (daysPricesDiscount.getDiscount()[4].equals("Ultimos")) {
@@ -311,6 +306,7 @@ public class MainFrame extends JFrame {
                                 dai--;
                                 for (int i = calculate1.length - 1; i >= 0; i--) {
                                     if (calculate1[i].getDays() > 0) {
+                                        System.out.println("Hay descupento de 7 dias?");
                                         calculate1[i].setDays(calculate1[i].getDays() - 1);
                                         break;
                                     }
@@ -335,7 +331,7 @@ public class MainFrame extends JFrame {
                             }
                         }
                     } else if (daysPricesDiscount.getDiscountType().equals("Larga estancia")) {
-                        calculolarga=0;
+                        calculolarga = 0;
                         for (int i = 0; i < calculate1.length; i++) {
                             if (calculate1[i].getDays() > 0 || calculate1[i].getPrice() > 0) {
                                 calculolarga += calculate1[i].getDays() * calculate1[i].getPrice();
@@ -343,18 +339,17 @@ public class MainFrame extends JFrame {
                         }
                         double dis = Double.parseDouble(daysPricesDiscount.getDiscount()[1]);
                         calculolarga = calculolarga - (dis / 100) * calculolarga;
-                    } 
-                    
-                    
-                    System.out.println("calculopermanente="+calculopermanente);
-                    System.out.println("calculolarga="+calculolarga);
-                    System.out.println("calculopersonalizado="+calculopersonalizado);
-                    
-                    finalPrice = Double.min(Double.min(calculolarga,calculopermanente), Double.min(calculopersonalizado,finalPrice));
+                    }
+
+                    System.out.println("calculopermanente=" + calculopermanente);
+                    System.out.println("calculolarga=" + calculolarga);
+                    System.out.println("calculopersonalizado=" + calculopersonalizado);
+
+                    finalPrice = Double.min(Double.min(calculolarga, calculopermanente), Double.min(calculopersonalizado, finalPrice));
                     if (finalPrice == calculopermanente) {
                         System.out.println("DEBUG");
-                        System.out.println("daysPricesDiscount.getDiscount()[4]"+daysPricesDiscount.getDiscount()[4]);
-                        System.out.println("daysPricesDiscount.getDiscount()[1]"+daysPricesDiscount.getDiscount()[1]);
+                        System.out.println("daysPricesDiscount.getDiscount()[4]" + daysPricesDiscount.getDiscount()[4]);
+                        System.out.println("daysPricesDiscount.getDiscount()[1]" + daysPricesDiscount.getDiscount()[1]);
                         System.out.println("DEBUG");
                         discountPercent.setText(daysPricesDiscount.getDiscount()[4] + " " + daysPricesDiscount.getDiscount()[1]);
                         discount.setText(daysPricesDiscount.getDiscountType());
@@ -362,7 +357,7 @@ public class MainFrame extends JFrame {
                         discountPercent.setText(daysPricesDiscount.getDiscount()[1]);
                         discount.setText(daysPricesDiscount.getDiscountType());
                     } else if (finalPrice == calculopersonalizado) {
-                        
+                        System.out.println("Calculo personalizado");
                     } else {
                         discountPercent.setText("");
                         discount.setText("");

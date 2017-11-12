@@ -170,7 +170,6 @@ public class Calculator {
                     JOptionPane.showMessageDialog(null, "Imposible realizar la operacion. Revise las fechas.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
 
-                break;
             }
         }
 
